@@ -1,0 +1,63 @@
+// Copyright 2016 Palantir Technologies, Inc. All rights reserved.
+// Licensed under the BSD-3 License as modified (the “License”); you may obtain a copy
+// of the license at https://github.com/palantir/blueprint/blob/master/LICENSE
+// and https://github.com/palantir/blueprint/blob/master/PATENTS
+
+@import "../../common/variables";
+
+$overlay-background-color: rgba($black, 0.7) !default;
+
+// restricts scrolling of underlying content while the overlay is open
+body.pt-overlay-open {
+  overflow: hidden;
+}
+
+// fixed position so the backdrop forecefully covers the whole screen
+.pt-overlay-backdrop {
+  @include position(fixed, 0);
+  @include react-transition(
+    "pt-overlay",
+    (opacity: 0 1),
+    $pt-transition-duration * 2,
+    $before: "&"
+  );
+  z-index: $pt-z-index-overlay;
+  background-color: $overlay-background-color;
+  overflow: auto;
+
+  &:focus {
+    outline: none;
+  }
+}
+
+// we surreptitiously add this class to the overlay content container so that
+// users won't need to explicitly manage the position mode for inline and
+// non-inline rendering.
+.pt-overlay-content {
+  position: fixed;
+}
+
+// when rendered inline, we want the overlay to position itself relative to
+// its parent container, not relative to the whole window. thus, we change
+// to position:absolute.
+.pt-overlay-inline {
+  .pt-overlay-backdrop,
+  .pt-overlay-content {
+    position: absolute;
+  }
+}
+
+// scroll container for non-inline overlay. it needs an explicit z-index to
+// ensure that the backdrop renders on top of any navbars.
+.pt-overlay-scroll-container.pt-overlay-open {
+  @include position(fixed, 0);
+  z-index: $pt-z-index-overlay;
+  overflow: auto;
+
+  // if content extends off the bottom of the page, it will not be
+  // scrollable if it's position:fixed. scrolling works as expected if
+  // it's position:absolute though.
+  .pt-overlay-content {
+    position: absolute;
+  }
+}

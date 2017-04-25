@@ -1,0 +1,19 @@
+dispatchLoanToUserAsync
+dispatchDisburseToUserAsync
+now take in an extra optional array argument for asset.
+  - {Array<Number>} instanceIds
+    an optional array of instanceIds if the item is an asset.
+
+approveBundleAsLoanAsync
+approveBundleAsDisburseAsync
+now take in an extra optional object for asset.
+  - {Object} instanceMap
+  an object that holds the orderId -> instanceIds pairs
+  Key(OrderId) is the per-item-based orderId,
+  Value(Array<Number>) is the instanceIds you want to associate with this order.
+  Example of instanceMap
+   {
+     orderId1: [instanceId1, instanceId2, ...],
+     201: [23, 24, 25],
+     203: [88],
+   }

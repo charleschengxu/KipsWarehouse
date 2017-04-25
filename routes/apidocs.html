@@ -1,0 +1,918 @@
+<!doctype html>
+<html><head><title>RESTful API Design</title><meta charset="UTF-8"><link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Crimson+Text:400,400italic,700,700italic|Roboto:400,700,700italic,400italic" type="text/css"><style>/*
+ * Copyright 2014 Quip
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may
+ * not use this file except in compliance with the License. You may obtain
+ * a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations
+ * under the License.
+ */
+
+body {
+    font-size: 15px;
+    color: #333;
+    background: #fff;
+    padding: 60px 95px;
+    max-width: 900px;
+    margin: 0 auto;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "kern";
+    font-kerning: normal;
+    -moz-font-feature-settings: "kern";
+    -webkit-font-feature-settings: "kern";
+}
+
+/* Headings */
+h1, h2, h3, th {
+    font-family: Roboto, sans-serif;
+    font-weight: 700;
+    margin: 0;
+    margin-top: 1.25em;
+    margin-bottom: 0.75em;
+}
+
+h1 {
+    font-size: 35px;
+    line-height: 42px;
+}
+
+h1:first-child {
+    margin-top: 0;
+}
+
+h2 {
+    font-size: 18px;
+    line-height: 22px;
+}
+
+h3 {
+    text-transform: uppercase;
+    font-size: 13px;
+    line-height: 16px;
+}
+
+/* Body text */
+body, p, ul, ol, td {
+    font-family: 'Crimson Text', serif;
+    font-size: 16px;
+    line-height: 20px;
+}
+
+blockquote, q {
+    display: block;
+    margin: 1em 0;
+    font-style: italic;
+}
+
+blockquote a, q a {
+    text-decoration: underline;
+}
+
+blockquote {
+    padding-left: 10px;
+    border-left: 4px solid #a6a6a6;
+}
+
+q {
+    color: #a6a6a6;
+    line-height: 40px;
+    font-size: 24px;
+    text-align: center;
+    quotes: none;
+}
+
+q a {
+    color: #a6a6a6;
+}
+
+code, pre {
+    font-family: Consolas, "Liberation Mono", Menlo, "Courier Prime Web", Courier, monospace;
+    background: #f3f3f3;
+}
+
+code {
+    padding: 1px;
+    margin: 0 -1px;
+    border-radius: 3px;
+}
+
+pre {
+    display: block;
+    line-height: 20px;
+    text-shadow: 0 1px white;
+    padding: 5px 5px 5px 30px;
+    white-space: nowrap;
+    position: relative;
+    margin: 1em 0;
+}
+
+pre:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 15px;
+    border-left: solid 1px #dadada;
+}
+
+/* Lists */
+div[data-section-style="5"],
+div[data-section-style="6"],
+div[data-section-style="7"] {
+    margin: 12px 0;
+}
+
+ul {
+    padding: 0 0 0 40px;
+}
+
+ul li {
+    margin-bottom: 0.4em;
+}
+
+/* Bulleted list */
+div[data-section-style="5"] ul {
+    list-style-type: disc;
+}
+div[data-section-style="5"] ul ul {
+    list-style-type: circle;
+}
+div[data-section-style="5"] ul ul ul {
+    list-style-type: square;
+}
+div[data-section-style="5"] ul ul ul ul {
+    list-style-type: disc;
+}
+div[data-section-style="5"] ul ul ul ul ul {
+    list-style-type: circle;
+}
+div[data-section-style="5"] ul ul ul ul ul ul {
+    list-style-type: square;
+}
+
+/* Numbered list */
+div[data-section-style="6"] ul {
+    list-style-type: decimal;
+}
+div[data-section-style="6"] ul ul {
+    list-style-type: lower-alpha;
+}
+div[data-section-style="6"] ul ul ul {
+    list-style-type: lower-roman;
+}
+div[data-section-style="6"] ul ul ul ul {
+    list-style-type: decimal;
+}
+div[data-section-style="6"] ul ul ul ul ul {
+    list-style-type: lower-alpha;
+}
+div[data-section-style="6"] ul ul ul ul ul ul {
+    list-style-type: lower-roman;
+}
+
+/* Checklist */
+div[data-section-style="7"] ul {
+    list-style-type: none;
+}
+
+div[data-section-style="7"] ul li:before {
+    content: "\2610";
+    position: absolute;
+    display: inline;
+    margin-right: 1.2em;
+    margin-left: -1.2em;
+}
+
+div[data-section-style="7"] ul li.parent:before {
+    content: "";
+}
+
+div[data-section-style="7"] ul li.parent {
+    font-weight: bold;
+}
+
+div[data-section-style="7"] ul li.checked {
+    text-decoration: line-through;
+}
+
+div[data-section-style="7"] ul li.checked:before {
+    content: "\2611";
+    text-decoration: none;
+}
+
+/* Tables */
+div[data-section-style="8"] {
+    margin: 12px 0;
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: separate;
+    border: solid 1px #7c7c7c;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+    table-layout: fixed;
+    position: relative;
+}
+
+table th, table td {
+    padding: 2px 2px 0;
+    min-width: 1.5em;
+    word-wrap: break-word;
+}
+
+table th {
+    border-bottom: 1px solid #ccc;
+    background: #f0f0f0;
+    font-weight: bold;
+    vertical-align: bottom;
+    color: #3a4449;
+    text-align: center;
+}
+
+table td {
+    padding-top: 0;
+    border-left: 1px solid #e1e1e1;
+    border-top: 1px solid #e1e1e1;
+    vertical-align: top;
+}
+
+table td.bold {
+    font-weight: bold;
+}
+
+table td.italic {
+    font-style: italic;
+}
+
+table td.underline {
+    text-decoration: underline;
+}
+
+table td.strikethrough {
+    text-decoration: line-through;
+}
+
+table td.underline.strikethrough {
+    text-decoration: underline line-through;
+}
+
+table td:first-child {
+    border-left: hidden;
+}
+
+table tr:first-child td {
+    border-top: hidden;
+}
+
+/* Images */
+div[data-section-style="11"] {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div[data-section-style="11"][data-section-float="0"] {
+    clear: both;
+    text-align: center;
+}
+
+div[data-section-style="11"][data-section-float="1"] {
+    float: left;
+    clear: left;
+    margin-right: 20px;
+}
+
+div[data-section-style="11"][data-section-float="2"] {
+    float: right;
+    clear: right;
+    margin-left: 20px;
+}
+
+div[data-section-style="11"] img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: auto;
+}
+
+hr {
+    width: 70px;
+    margin: 20px auto;
+}
+</style></head><body><h1 id='afUACATohgk'>RESTful API Design</h1>
+
+<div data-section-style='5'><ul id='afUACAxHXZd'><li id='afUACAqkDIf' class='' value='1'>Our base url is <a href="https://kipswarehouse.com/">https://kipswarehouse.com</a>
+
+<br/></li><li id='afUACAOAPiC' class=''>RESTful endpoints are qualified with prefix <code>/api</code> to distinguish from those that respond with page to render. For example, to get all the items, the endpoint would be <a href="https://kipswarehouse.com/">https://kipswarehouse.com/api/items</a>. Two exceptions would be login, which is simply  <a href="https://kipswarehouse.com/">https://kipswarehouse.com/login/</a>.
+
+<br/></li><li id='afUACAdm0ld' class=''>All the <code>/api</code> path will need authentication. A JWT token will need to be put in the Authorization header, with the value 'JWT {token}', indicating a logged-in user for each request.
+
+<br/></li><li id='afUACAc2vMv' class='parent'>A request may contain 3 things: 
+
+<br/></li><ul><li id='afUACA20Xve' class=''>path parameters, which is indicated by <code>:varName</code>  in the request path. e.g.  <code><b>POST /api/instances/:itemId</b></code>
+
+<br/></li><li id='afUACALNzb6' class=''>request query, which is part indicated by a '?'. It is usually used as a filter, pagination, or search string. e.g.  <code><b>GET /api/items/?id=3&amp;rowPerPage=10&amp;pageNumber=1</b></code>
+
+<br/></li><li id='afUACACOA9N' class=''>request body, which is the payload of the request.
+
+<br/></li></ul><li id='afUACAKxnL2' class=''>Just a naming note: We decide to use the name <i>bundle</i> for the high-level request, and the name <i>order</i> for each sub-request contained in a high-level request.
+
+<br/></li></ul></div><hr/><h2 id='afUACA3sy9M'>Database Schema</h2>
+
+In all, we have 17 tables and an extra SequelizeMeta table which holds the general information that has nothing to do with the real data. Following lists the schema of all the tables in our database in alphabetical order.<br/>
+
+<div data-section-style='11' style='max-width:28%'><img src='https://quip.com/blob/afUAAAANOke/oO76EzCUtmeu5ORtHTWaSQ?a=a5aX8vr1vXMi3u2G5LoZWmqPR6rTkExvdBtQMywWUNQa' id='afUACArA0th' alt='' width='228' height='420'></img></div><br/>
+
+backfill_proofs<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/zdMMc1PMhAORIUF2iTAakg?a=WHgehOmJ4Vn7gYshxu6ylIHS1ZWZ5lxvx9QoGNrHvYYa' id='afUACAAvwy1' alt='' width='800' height='249'></img></div>custom_field_values<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/yNice-_yCiHWaIJnMKUq2g?a=7vuHIhGiXStIT8a4eX2ADzdnB6FCNAfINfouLHv27ega' id='afUACA5uXjw' alt='' width='698' height='274'></img></div>custom_fields<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/nCyewQEYawkvhKJjmZCczg?a=2VOD8dDwlp4anGnNSzClL9Uc99VSDSIWlOFXxWTlphga' id='afUACADfpN5' alt='' width='698' height='266'></img></div>email_templates<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/kJHKalgeLK05zawWTFKWIw?a=2VH2CYfXYc2aa1ELmgYwGLB6OYG4HakA3fAxJ5QTZDca' id='afUACAL9Qnr' alt='' width='672' height='240'></img></div>instance_custom_field_values<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/cdRBifJrNy9GuD1MAYisbA?a=dazf1ADN3wprVbMJ9bDRuhBV0qeHLVllgTJpjX8MlaYa' id='afUACAb5tAY' alt='' width='670' height='270'></img></div>instance_custom_fields<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/yvDr0D0oFHotMHMoWSDOcQ?a=eMjos1rPhWdvzD3D8aWSDZAFGiCv08z3BENXnq6xYIAa' id='afUACAZWyVR' alt='' width='800' height='265'></img></div>item_instances<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/ZPKBIQUIAeqajsLktxMOlA?a=qLzeBFrqBZ8tazgeq8ua3OfM0iXWPkTy7akaZGTdSa0a' id='afUACAcIXLa' alt='' width='800' height='217'></img></div>item_tag_pairs<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/JeAvm4qaaTVYAFWUK8NkAA?a=mKWOKIjzSagnTfE3bAz9OCtrKa6fb2azaP6HTbOXxJwa' id='afUACAGemNg' alt='' width='638' height='230'></img></div>items<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/qBxItG49RWjlp635-foX-Q?a=TImJvuJa0zh5WIlvjmYdD3HMPatNXD9vzNGhmhG7okYa' id='afUACAr9trp' alt='' width='650' height='408'></img></div>logs<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/m58n8Sqc3-MwVlj_uWYfEQ?a=sEKZVUR76V4mPBfJS8IR3lCwoukRXa1dKTCakMBMnUga' id='afUACAqnyF2' alt='' width='648' height='384'></img></div>order_bundles<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/eg1a5kNYnT-Ym4sEG5ILIw?a=vzaNYIHFgZWjfJthxYmlWGfYKuz3nE9vV0WIraaGrLca' id='afUACAcMU9S' alt='' width='800' height='224'></img></div>order_instance_pairs<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/UaRTcaU5WmyEm7jub8bcuQ?a=KqaAD90cTiiV9nOK0qrLZt5DkVVFAyaR4bHaISwaru4a' id='afUACAVGDIg' alt='' width='656' height='232'></img></div>orders<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/mUHifzuF4wRbSZk1mP7B4A?a=5e5RqlaN094yg6aIACKhcxj439gBax26ZCmKI6xdtREa' id='afUACATop0y' alt='' width='800' height='276'></img></div>reminder_dates<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/W_iPPOQA0gtJr92WT3q6yA?a=NZPFA3pvaqGGpGPB0U7n3y6GzoHwszy4MyAcaHw5sPYa' id='afUACAJGjNo' alt='' width='690' height='198'></img></div>subscription<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/N5WAi4Ci_9Rvu5Yeeexe9A?a=qreNFUTZ8Eh2exQPafytqlONAyQskQc9sGwGxrcWRr8a' id='afUACAzJ8a0' alt='' width='664' height='212'></img></div>tags<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/OmnZeD4J3-GYGmkwK-0H8Q?a=KA5ijY3MDcrLYaQblppOU9ou082nEdu1gtYovjOxwYsa' id='afUACAXWnb7' alt='' width='646' height='238'></img></div>users<br/>
+
+<div data-section-style='11' style='max-width:100%'><img src='https://quip.com/blob/afUAAAANOke/clmPB4-3A09ZovCzyKMAtA?a=f8ECVruog1QV84gfjKPckw5sNyYXgiIXZGuKTOj3Tt4a' id='afUACAYdFPg' alt='' width='800' height='408'></img></div><hr/><br/>
+
+<h2 id='afUACAwZ7zA'>Login</h2>
+
+<code><b>POST /login</b></code><br/>
+
+Login with <code>{username}</code> and <code>{password}</code>, or with <code>{access_token}</code> retrieved from colab's API.<br/>
+
+<pre id='afUACAqwqgC'>//body<br>{<br>    "username": "",<br>    "password": "",<br>    //or<br>    "accessToken": ""<br>}</pre>
+
+<pre id='afUACACh5As'>//Response<br>{<br>  "status": "success", //either success or error.<br>  "error": "", //if error, will be present. Same apply to all responses.<br>  "data": { //if success, will be present. Same apply to all responses.<br>    "id": 36,<br>    "username": "jayay",<br>    "displayName": "Jay Wang",<br>    "email": "zhewang828@gmail.com",<br>    "netId": null,<br>    "isNetIdUser": 0,<br>    "accountStatus": "ACTIVE",<br>    "permission": "ADMIN",<br>    "createdAt": "2017-02-19T07:56:15.000Z",<br>    "updatedAt": "2017-02-19T07:56:15.000Z",<br>    "token": "", //JWT token<br>  }<br>}</pre>
+
+<hr/><h2 id='afUACAkjcwI'>Users</h2>
+
+<code><b>GET /api/users/apikey/</b></code><br/>
+
+When logged in (valid Authorization header configured), get an unexpired API key (JWT token) that can be used for API calls.<br/>
+
+<pre id='afUACAbWlN7'>//Response<br>{<br>  "status": "success",<br>  "data": "xxxx", //JWT token<br>}</pre>
+
+<br/>
+
+<code><b>GET /api/users/?userId=123</b></code><br/>
+
+Get all the users' information.<br/>
+
+<pre id='afUACAEMbwi'>//Response<br>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "id": 6,<br>      "username": "buie",<br>      "displayName": "buie",<br>      "email": "andrew.buie@duke.edu",<br>      "netId": "ajb93",<br>      "isNetIdUser": 0,<br>      "accountStatus": "ACTIVE",<br>      "permission": "ADMIN",<br>      "createdAt": "2017-02-18T18:42:06.000Z",<br>      "updatedAt": "2017-02-18T18:42:06.000Z"<br>    },<br>    {<br>      "id": 7,<br>      "username": "emre",<br>      "displayName": "emre",<br>      "email": "emre.sonmez@duke.edu",<br>      "netId": "ebs32",<br>      "isNetIdUser": 0,<br>      "accountStatus": "ACTIVE",<br>      "permission": "USER",<br>      "createdAt": "2017-02-18T18:42:06.000Z",<br>      "updatedAt": "2017-02-18T18:42:06.000Z"<br>    }<br>  ]<br>}</pre>
+
+<br/>
+
+<code><b>POST /api/users/:username/:password</b></code><br/>
+
+Admin only. Create a user with <code>:name</code> and <code>:password</code> (password is in plain text, will be hased in server side. Relying on https for safety).<br/>
+
+<pre id='afUACAmxUdE'>//Optional body<br>{<br>    "displayName": "", //if not provided, default to be the same as username<br>    "email": "", //required<br>    "permission": "" //ADMIN, MANAGER, USER<br>}</pre>
+
+<pre id='afUACAkQ5ID'>//Response<br>{<br>  "status": "success",<br>  "data": {<br>    "accountStatus": "ACTIVE",<br>    "id": 47,<br>    "username": "jayman",<br>    "displayName": "jayman",<br>    "email": "zw48@duke.edu",<br>    "netId": null,<br>    "isNetIdUser": 0,<br>    "permission": "MANAGER",<br>    "updatedAt": "2017-02-22T06:38:32.000Z",<br>    "createdAt": "2017-02-22T06:38:32.000Z"<br>  }<br>}</pre>
+
+<br/>
+
+<b><code>DELETE /api/users/:userId</code></b> (NOTE: NOT SUPPORTED YET.)<br/>
+
+Admin only. Delete the user with <code>:userId</code><br/>
+
+<pre id='afUACARzZWi'>//Response<br>{<br>    "status": "",<br>    "error": ""<br>}</pre>
+
+<br/>
+
+<b><code>PUT /api/users/:userId</code></b><br/>
+
+Update an existing user's information.<br/>
+
+<pre id='afUACASVa8y'>//Optional body<br>{<br>    "displayName": "",<br>    "email": "",<br>    "permission": ""<br>}</pre>
+
+<pre id='afUACAHZu6E'>//Response<br>{<br>  "status": "success",<br>  "data": {<br>    "id": 47,<br>    "username": "jayman",<br>    "displayName": "jayman",<br>    "email": "zw48@duke.edu",<br>    "netId": null,<br>    "isNetIdUser": 0,<br>    "accountStatus": "ACTIVE",<br>    "permission": "MANAGER",<br>    "createdAt": "2017-02-22T06:38:32.000Z",<br>    "updatedAt": "2017-02-22T06:57:23.000Z"<br>  }<br>}</pre>
+
+<br><br/>
+
+<hr/><h2 id='afUACAhXWHU'>Logs</h2>
+
+<code><b>GET /api/logs/?userId=&amp;itemId=&amp;fromTime=&amp;toTime=&amp;rowPerPage=&amp;pageNumber=</b></code><br/>
+
+Get all the logs with specified filters.<br/>
+
+<br/>
+
+<pre id='afUACA77prx'>//Note fromTime/toTime needs to be a URLencoded-JSONstringified js Date object.<br>//For example, it needs to be something like:<br>const toTimeParam = encodeURIComponent(JSON.stringify(new Date()));</pre>
+
+<pre id='afUACAkOSlg'>//response<br>{<br>  "status": "success",<br>  "data": [ <br>    //srcUser, destUser, item, bundle, if not undefined, means <br>    // is a valid entry of this log and can be used to display and redirect.<br>    {<br>      "id": 67,<br>      "content": "item FPGA's quantity is deducted 8 on user Jay Wang's approval of request #23",<br>      "createdAt": "2017-02-26T07:54:37.000Z",<br>      "updatedAt": "2017-02-26T07:54:37.000Z",<br>      "isValid": true,<br>      "srcUser": {<br>        "id": 36,<br>        "name": "Jay Wang"<br>      },<br>      "item": {<br>        "id": 10091,<br>        "name": "FPGA"<br>      },<br>      "bundle": {<br>        "id": 23,<br>        "name": "#23"<br>      }<br>    },<br>    ...<br>  ]<br>}</pre>
+
+<br/>
+
+<br/>
+
+<hr/><h2 id='afUACAeIIFR'>Items </h2>
+
+<code><b>POST /api/items/threshold</b></code> <br/>
+
+Set minimum stock threshold on specified items.<br/>
+
+<pre id='afUACAUNUYL'>// Required Request body<br>{<br>    "itemIds": ["id1", "id2", ... ],<br>    "invertSelection": true | false,<br>    "<code>threshold</code>": 100<br>}</pre>
+
+<pre id='afUACAi25Qb'><code>//Response<br>{</code><br>    "status": "",<br>    "error": "",<br>}</pre>
+
+<br/>
+
+<br/>
+
+<code><b>GET /api/items/threshold</b></code> <br/>
+
+Returns a list of items whose quantities are below their respective minimum thresholds.<br/>
+
+<pre id='afUACAgD8Cy'><code>//Response<br>{</code><br>    "status": "",<br>    "error": "",<br>    "data": [<br>        {<br>            "id": "",<br>            "name": "",<br>            "quantity": 1234,<br>            "model": "",<br>            "isAsset": 0 | 1,<br>            "threshold": 100, <br>            "description": "",<br>            "itemStatus": "",<br>            "tags":["resistor", "wand", ..], // array of tag names<br>            "location": "husdon", // custom fields <br>            "restock_info": null, // custom fields <br>        },<br>        {<br>            ...<br>        }<br>    ] //array of item objects<br>}</pre>
+
+<br/>
+
+<br/>
+
+<code><b>POST /api/items/getItemsAndInstances</b></code> <br/>
+
+Return a list of items and their respective instances<br/>
+
+<pre id='afUACAryOQh'>// Required Request body<br>{<br>    "itemIds": ["id1", "id2", ... ],<br>}</pre>
+
+<pre id='afUACAy7SJx'>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "itemId": 10349,<br>      "itemName": "Jumper cables",<br>      "instances": [<br>        {<br>          "instanceId": 24,<br>          "assetTag": 1491696033347<br>        },<br>        {<br>          "instanceId": 25,<br>          "assetTag": 1491696033502<br>        }<br>      ]<br>    },<br>    {<br>        ...<br>    }<br>  ]<br>}</pre>
+
+<br/>
+
+<br/>
+
+<code><b>GET /api/items/?id=&amp;rowPerPage=&amp;etc</b></code> <br/>
+
+Get all the items with proper filtering<br/>
+
+<pre id='afUACABpCJV'>// Query param<br>{<br>    includeTags: ["resistor"],<br>    excludeTags: ["oscilloscope"],<br>    id: 1234,<br>    rowPerPage: 10,<br>    pageNumber: 1, // assume counting from 1<br>    name: "50 ohms",<br>    model: "model text"<br>}</pre>
+
+<pre id='afUACAY2Mzb'><code>//response<br>{</code><br>    "status": "",<br>    "error": "",<br>    "data": [<br>        {<br>            "id": "",<br>            "name": "",<br>            "quantity": 1234,<br>            "model": "",<br>            "description": "",<br>            "itemStatus": "",<br>            "tags":["resistor", "wand", ..], //array of tag names<br>            /* vvvvvvvvvvv custom fields come in handy vvvvvvvvvvvvv */<br>            "location": "husdon",<br>            "restock_info": null, //if no specific value specified for this item <br>        },<br>        {<br>            ...<br>        }<br>    ] //array of item objects<br>}</pre>
+
+<br/>
+
+<br/>
+
+<code><b>GET /api/items/customFields/</b></code><br/>
+
+<pre id='afUACAaqMNm'><code>//Response<br>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "id": 3,<br>      "name": "location",<br>      "type": "SHORT",<br>      "visibility": "PUBLIC",<br>      "createdAt": "2017-02-21T19:28:36.000Z",<br>      "updatedAt": "2017-02-21T19:28:36.000Z"<br>    },<br>    {<br>      "id": 4,<br>      "name": "restock_info",<br>      "type": "LONG",<br>      "visibility": "PUBLIC",<br>      "createdAt": "2017-02-21T19:28:36.000Z",<br>      "updatedAt": "2017-02-21T19:28:36.000Z"<br>    },<br>    ...<br>  ]<br>}</code></pre>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<code><b>POST /api/items/customFields/:name/:type/:visibility</b></code><br/>
+
+Create a new custom field on all items with <code>:name</code> , <code>:type</code>, and <code>:visibility</code><br/>
+
+If field already exist, update it with the  <code>:visibility</code> given, but the <code>:type</code> of the field cannot be changed after field is created. Doing so to protect legacy data. If such need persists, one shall explicit delete the field, and then create it with a different type.<br/>
+
+<br/>
+
+<code>:type </code>is an enum with value set<code> {'SHORT','LONG','INT','FLOAT'}</code><br/>
+
+<code>:visibility </code>is an  enum with value set<code> {'PRIVATE','PUBLIC'}</code><br/>
+
+A value of any custom field must <b>not</b> exceed 8192 bytes<br/>
+
+<pre id='afUACAzQ6Q6'><code>//Response<br>{</code><br>    "status": "",<br>    "error": "",<br>    "data": { // the updated or created customfield info<br>        "id": 8,<br>        "type": "LONG",<br>        "visibility": "PUBLIC",<br>        "name": "name given in request",<br>        "updatedAt": "2017-02-17T23:21:45.000Z",<br>        "createdAt": "2017-02-17T23:21:45.000Z"<br>    }<br>}</pre>
+
+<br/>
+
+<code><b>PUT /api/<code><b>items</b></code>/customFields/convertToPerAsset</b></code><br/>
+
+Convert a custom field on each item to be on all instances of an item.<br/>
+
+<pre id='afUACAhHcQl'>// Required <code>Request B</code>ody<br>{<br>    "name": "the_custom_field_name",<br>}</pre>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<code><b>PUT /api/<code><b>items</b></code>/customFields/:name/:visibility/</b></code><br/>
+
+Update an existing custom field<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<code><b>DELETE /api/items/customFields/:name/</b></code><br/>
+
+Remove a custom field on items. All values associated with this field will also be deleted.<br/>
+
+<pre id='afUACAzyWit'><code>//Response<br>{</code><br>    "status": "",<br>    "error": "",<br>}</pre>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<code><b>POST /api/items/:itemName/:quantity/</b></code><br/>
+
+Create a new item with <code>:itemName</code> and <code>:quantity</code><br/>
+
+<pre id='afUACA46l8c'>// optional body<br>{<br>    "model": "",<br>    "description": "",<br>    "location": "",<br>    "tags": ["tagId1", "tagId2"], //array of tagIds<br>    "itemStatus" : "ACTIVE"<br>}</pre>
+
+<pre id='afUACA4ipNP'><code>//Response<br>{</code><br>    "status": "",<br>    "error": "",<br>    "data": {} // return the item just created, with all fields, <b>NO TAGS</b><br>}</pre>
+
+<br/>
+
+<br/>
+
+<code><b>POST /api/items/import</b></code><br/>
+
+Bulk import a list of new items to the system by uploading a <b>json</b> file.<br/>
+
+<pre id='afUACAqdU6n'>// request body <br>{<br>    "fileHandle": "fjdlksafjidsabklfdsa" // some file handle returned by filestack<br>}</pre>
+
+The entire import is all or nothing. Any syntactic/semantic error that aborts the transaction will prevent any item in file to be imported. <br/>
+
+The error message returned by server is extremely helpful. Consider the following example.<br/>
+
+<pre id='afUACAKDY5P'>// file uploaded<br>[<br>    {<br>        "name": "",<br>        "quantity": 1234,<br>        "model": "",<br>        "description": "",<br>        "itemStatus": "",<br>        "isAsset" : 1 | 0, <br>        "tags": [ "resistor", "wand" ], //array of tag names<br>        "location": "husdon", // per-item custom field<br>        "restock_info": " ", // per-item custom field<br>        /* <i><u>instances</u></i> attribute is permitted only if <i><u>isAsset.</u></i><br>           Either do not include <i><u>instances</u></i><br>           or the instances array must sum up to the item quantity */ <br>        "instances": <br>        [<br>            {<br>                "assetTag" : 1234,  <br>                "instanceStatus" : "AVAILABLE" | "DISBURSE" | "LOAN",<br>                "instance_location": "Kips Lab" // instance custom fields integrated<br>            },<br>            {<br>                "assetTag" : 1234,  <br>                "instanceStatus" : "AVAILABLE" | "DISBURSE" | "LOAN",<br>                "instance_location": "Kips Lab" // instance custom fields integrated<br>            },<br>        ]<br>    },<br>    {<br>        "name" : "test_item2",<br>        "quantity" : 2,<br>        "model" : "model 2",<br>        "nosuchfieldreally" : "nuh"<br>    }<br>]</pre>
+
+<pre id='afUACAAjEkZ'>// Server response<br>{<br>  "status": "error",<br>  "error": {<br>    "type": "ERROR",<br>    "message": "Cannot create test_item2 with ill-defined custom fields: nosuchfieldreally"<br>  }<br>}</pre>
+
+Other errors could be<br/>
+
+<div data-section-style='6'><ul id='afUACAvAD6Z'><li id='afUACAdHXpB' class='' value='1'>import an item whose name already existed
+
+<br/></li><li id='afUACAi7y1w' class=''>an item referencing a tag that is yet to be defined
+
+<br/></li><li id='afUACAF9WqO' class=''>quantity is negative
+
+<br/></li><li id='afUACAF0VUB' class=''>etc. 
+
+<br/></li></ul></div><br/>
+
+<br/>
+
+<br/>
+
+<code><b>PUT /api/items/:itemId/</b></code> <br/>
+
+Update by <u><i>overriding</i></u> an existing item with <code>:itemId</code><br/>
+
+<pre id='afUACAlDsLD'>// optional body. All provided fields will be updated as is<br>{<br>     "name": "",<br>     "quantity": 6666,<br>     "location": "",<br>     "model": "",<br>     "description": "",<br>     "tags": ["", "", ""],<br>     "comment": "I am kip and I override the quantity", // used for quantity log<br>}</pre>
+
+<pre id='afUACAZ6hRp'><code>//Response<br>{</code><br>    "status": "",<br>    "error": "",<br>    "data": {} // return the item updated, with all fields, <b>NO TAGS</b><br>}</pre>
+
+<br/>
+
+<code><b>PUT /api/items/:itemId/:quantityDelta</b></code><br/>
+
+<pre id='afUACAPjzov'>//Optional body. <br>{<br>    "comment": "" //to log acquisition/loss <br>}</pre>
+
+Update by <u><i>applying the arguments as delta onto existing record</i></u> of item with <code>:itemId</code><br/>
+
+Other fields cannot be updated using delta and have to use the previous api<br/>
+
+<code><b>quantityDelta</b> could be positive or negative</code><br/>
+
+<pre id='afUACAhYSZe'>//Response<br>{<br>    "status": "",<br>    "error": "",<br>    "data": {} // return the item updated, with all fields<br>}</pre>
+
+<br/>
+
+<code><b>DELETE /api/items/:itemId/</b></code>  <br/>
+
+delete an existing item with <code>:itemId</code><br/>
+
+<pre id='afUACAtRovt'><code>//Response<br>{</code><br>    "status": "",<br>    "error": ""<br>}</pre>
+
+<br/>
+
+<br/>
+
+<code><b>POST /api/items/convertToAsset</b></code>  <br/>
+
+Convert the item with <code>itemId</code> to asset such that this item now has distinguishable instances.<br/>
+
+The total count of such instances sum up to the quantity of the item. <br/>
+
+<pre id='afUACAM9at2'><code>// Required Request Body<br>{</code><br>    "itemId": 1234, <br>}</pre>
+
+<pre id='afUACAr5F8T'><code>//Response</code><br>{<br>    "status": "success"<br>}</pre>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+
+<hr/><h2 id='afUACANaLNU'>Tags</h2>
+
+<code><b>GET /api/tags/</b></code> <br/>
+
+get all the tags<br/>
+
+<pre id='afUACAJijDR'>{//Response<br>  "status": "success",<br>  "data": [//array of tag objects<br>    {<br>      "id": 1,<br>      "name": "resistor",<br>      "createdAt": "2017-02-22T07:49:26.000Z",<br>      "updatedAt": "2017-02-22T07:49:26.000Z"<br>    },<br>    ...<br>  ]<br>}</pre>
+
+<br/>
+
+<code><b>POST /api/tags/</b></code><br/>
+
+create new tags from the array provided (will ignore those already existing).<br/>
+
+<pre id='afUACA31H5C'>//body<br>{<br>    "tags": ["tagName1", "tagName2", ...]<br>}</pre>
+
+<pre id='afUACAa6u1L'>//Response<br>{<br>  "status": "success"<br>}<br>//or<br>{<br>  "status": "error",<br>  "error": {<br>    "type": "ERROR",<br>    "message": "syntax error. body.tags need to be a non-empty array"<br>  }<br>}</pre>
+
+<br/>
+
+<br/>
+
+<code><b>DELETE /api/tags/:tagId/</b></code> <br/>
+
+delete an existing tag with <code>:tagId</code>. Also removes<br/>
+
+<pre id='afUACAaQCMK'>//Response<br>{<br>  "status": "success"<br>}</pre>
+
+<br/>
+
+<hr/><h2 id='afUACAuVHby'>Instances</h2>
+
+<br/>
+
+<code><b>GET /api/instances/<code><b>?itemId=&amp;rowPerPage=&amp;etc</b></code></b></code> <br>Return a list of instances given client supplied query. Possible parameters are listed below. Results satisfied all parameter conditions at once. Empty array if no instances fit these all. <br/>
+
+<pre id='afUACAdkoBz'>// Query param<br>{<br>    itemId: 1234,<br>    assetTag: 123456, <br>    rowPerPage: 10,<br>    pageNumber: 1, // assume counting from 1<br>}</pre>
+
+<pre id='afUACAKhfc5'>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "id": 1,<br>      "itemId": 10278,<br>      "assetTag": 23124,<br>      "createdAt": null,<br>      "updatedAt": "2017-04-07T22:23:43.000Z",<br>      "instanceStatus": "DISBURSE",<br>      "instance_location": "Kips Lab" // instance custom fields integrated<br>    },<br>    {<br>      "id": 2,<br>      "itemId": 10278,<br>      "assetTag": 123,<br>      "createdAt": null,<br>      "updatedAt": "2017-04-07T22:23:43.000Z",<br>      "instanceStatus": "DISBURSE",<br>      "instance_location": null<br>    },<br>    ...<br>  ]<br>}</pre>
+
+<br/>
+
+<br><code><b>POST /api/instances/:itemId</b></code><br>Create a new instance under item whose id is :itemId. The assetTag if specified must be globally unique.<br/>
+
+Will also increment the quantity of that item by 1.<br/>
+
+<pre id='afUACA9V8im'>// optional body<br>{<br>    "assetTag" : 1234,  <br>    "instanceStatus" : "AVAILABLE" | "DISBURSE" | "LOAN",<br>    "instance_location": "Kips Lab" // instance custom fields integrated<br>}</pre>
+
+<pre id='afUACAj7lkM'><code>//Response<br>{</code><br>    "status": "",<br>    "error": "",<br>    "data": {} // return the instance just created, with all fields<br>}</pre>
+
+<br/>
+
+<br><code><b>PUT /api/instances/:assetTag</b></code><br>Update the instance identified by assetTag.<br/>
+
+<pre id='afUACA0bKEw'>// optional body<br>{<br>    "assetTag" : 6789, // <b>NEW</b> assetTag, different from the one on path<br>    "instanceStatus" : "AVAILABLE" | "DISBURSE" | "LOAN",<br>    "instance_location": "Kips Lab" // instance custom fields integrated<br>}</pre>
+
+<pre id='afUACA7eXGC'><code>//Response<br>{<br>  "status": "success",<br>  "data": {<br>    "id": 1, // used internal only. Does not change once created. Unlike <code>assetTag.</code><br>    "itemId": 10278,<br>    "assetTag": 6789,<br>    "createdAt": <code>"2017-04-07T19:40:39.000Z"</code>,<br>    "updatedAt": "2017-04-08T19:40:39.000Z",<br>    "instanceStatus": "DISBURSE"<br>  }<br>}</code></pre>
+
+<br><br><code><b>DELETE /api/instances/:assetTag</b></code><br>Delete the instance identified by assetTag.<br/>
+
+<pre id='afUACAxHdVJ'><code>//Response<br>{<br>  "status": "success"<br>}</code></pre>
+
+<br/>
+
+<code><b>GET /api/instances/customFields/</b></code><br/>
+
+<code><b>POST /api/<code><b>instances</b></code>/customFields/:name/:type/:visibility/</b></code><br/>
+
+<code><b>PUT /api/<code><b>instances</b></code>/customFields/:name/:visibility/</b></code><br/>
+
+<code><b>DELETE /api/<code><b>instances</b></code>/customFields/:name/</b></code><br/>
+
+<hr/><h2 id='afUACA7hcbg'>Request</h2>
+
+<code><b>POST /api/ordersv2/:itemId/:quantity/:userId/</b></code> <br/>
+
+create a new order instance. For users, it is essentially 'add to cart'. For admin and manager, it could be used as a direct dispatch (can either dispatch a loan or dispatch a disburse).<br/>
+
+<pre id='afUACA6dwBI'>//body<br>{<br>    "adminComment": "",// optional.<br>    // When orderStatus is DISPATCHED, this will indicate the optional reason.<br>    // Will be ignored for CARTED.<br>    "orderStatus": "",// CARTED or DISPATCHED<br>    // normal user can only use 'CARTED', performing add-to-cart.<br>    // admin/manager can use 'DISPATCHED', which will lead to the creation of<br>    // a new DISPATCHED bundle containing only this order.<br>    // Item quantity will be deducted accordingly as well.<br>    "type": "",// LOAN or DISBURSE<br>    // This field will be ignored if orderStatus is CARTED.<br>    // But if orderStatus is DISPATCHED, this field will indicate<br>    // whether this dispatch is a loan or a disbursement.<br>}</pre>
+
+<pre id='afUACAJ921f'>//add to cart response<br>{<br>  "status": "success",<br>  "data": {<br>    "orderType": "DISBURSE",// this field doesn't have meanings when the order is carted. It's only meaningful when associated with a bundle.<br>    "id": 399,<br>    "userId": "36",<br>    "itemId": "10195",<br>    "quantity": "8",<br>    "orderStatus": "CARTED",<br>    "userComment": null,<br>    "adminComment": null,<br>    "updatedAt": "2017-03-19T22:14:53.000Z",<br>    "createdAt": "2017-03-19T22:14:53.000Z",<br>    "userName": "Jay Wang",<br>    "displayName": "Jay Wang",<br>    "itemName": "Inductor"<br>  }<br>}</pre>
+
+<pre id='afUACAZd7xr'>//dispatch response<br>{<br>  "status": "success",<br>  "data": {// new bundle instance<br>    "id": 96,<br>    "userId": "65",<br>    "bundleType": "LOAN",<br>    "bundleStatus": "DISPATCHED",<br>    "adminComment": "Hi",<br>    "updatedAt": "2017-03-19T22:13:55.000Z",<br>    "createdAt": "2017-03-19T22:13:55.000Z"<br>  }<br>}</pre>
+
+<code><b>POST /api/ordersv2/:userId</b></code> <br/>
+
+Submit <code><b>:userId</b></code> 's cart. A new PENDING bundle will be created containing all of this user's carted orders.  The orderType of each order row in the database will be updated to be the same as the bundleType. For example, if you submit the cart with the type LOAN,  the newly created bundle will have LOAN as its bundleType, and all the orders associated will have LOAN as their orderType. <br/>
+
+<pre id='afUACArlkqQ'>//body<br>{<br>    "userComment": "", //optional request reason.<br>    "type": "", //LOAN or DISBURSE indicating this request's type.<br>}</pre>
+
+<pre id='afUACAnjckX'>//response <br>{<br>  "status": "success",<br>  "data": {// new bundle instance<br>    "id": 97,<br>    "userId": "36",<br>    "bundleType": "LOAN",<br>    "bundleStatus": "PENDING",<br>    "userComment": "aaa",<br>    "adminComment": null,<br>    "updatedAt": "2017-03-19T22:17:51.000Z",<br>    "createdAt": "2017-03-19T22:17:51.000Z"<br>  }<br>}</pre>
+
+<br/>
+
+<code><b>GET /api/ordersv2/?bundleIds=&amp;itemIds=&amp;userIds=&amp;statuses=&amp;types=&amp;rowPerPage=&amp;pageNumber=</b></code><br/>
+
+Get all the bundles with specified filters. bundleIds, itemIds, userIds, statuses and types, as implied by their plural form, can be used to pass in an array of ids, e.g. <b><code>/?itemIds=1&amp;itemIds=2&amp;itemIds=3</code> </b>represents <code><b>itemIds=[1, 2, 3]</b></code> and, for example, <code><b>/?types=LOAN</b></code> can also be used to query a single type.<br/>
+
+<pre id='afUACA88ifp'>//response<br>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "id": 97,<br>      "userId": 36,<br>      "bundleType": "DISBURSE",<br>      "bundleStatus": "PENDING", // a pending disburse request<br>      "userComment": "i need it",<br>      "adminComment": null,<br>      "createdAt": "2017-03-19T22:17:51.000Z",<br>      "updatedAt": "2017-03-19T22:17:51.000Z",<br>      "displayName": "Jay Wang",<br>      "backfillStatus": "PARTIALLY APPROVED", // an optional field<br>      // that will be present if this bundle contains backfill request<br>      // it could be one of the PENDING, APPROVED, DENIED, PARTIALLY APPROVED.<br>      // PARTIALLY APPROVED means that this bundle contains some approved backfill<br>      // as well as some denied backfill.<br>    },<br>    {<br>      "id": 96,<br>      "userId": 65,<br>      "bundleType": "LOAN",<br>      "bundleStatus": "DISPATCHED", // a dispatched loan request<br>      "userComment": null,<br>      "adminComment": "dispatch it to you!",<br>      "createdAt": "2017-03-19T22:13:55.000Z",<br>      "updatedAt": "2017-03-19T22:13:55.000Z",<br>      "displayName": "tracer"<br>    },<br>    ...<br>  ]  <br>}</pre>
+
+<br/>
+
+<code><b>GET /api/ordersv2/cart/:userId</b></code><br/>
+
+get all the carted orders of a user<br/>
+
+<pre id='afUACAMBjqv'>//response<br>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "id": 400,<br>      "userId": 36,<br>      "itemId": 10035,<br>      "bundleId": null,<br>      "quantity": 3,<br>      "orderType": "DISBURSE",// this field doesn't have meanings when the order is carted. It's only meaningful when associated with a bundle.<br>      "orderStatus": "CARTED",<br>      "userComment": null,<br>      "adminComment": null,<br>      "createdAt": "2017-03-19T22:23:50.000Z",<br>      "updatedAt": "2017-03-19T22:23:50.000Z",<br>      "userName": "Jay Wang",<br>      "displayName": "Jay Wang",<br>      "itemName": "1K resistance"<br>    },<br>    ...<br>  ]<br>}</pre>
+
+<br/>
+
+<code><b>GET /api/ordersv2/:bundleId</b></code><br/>
+
+get all the orders belonging to  <code><b>:bundleId</b></code><br/>
+
+If an asset is involved, there will be a 'instances' field in the corresponding orders which is an array of item instances.<br/>
+
+<pre id='afUACAkag5j'>//reponse<br>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "id": 560,<br>      "userId": 48,<br>      "itemId": 10083,<br>      "bundleId": 218,<br>      "quantity": 1,<br>      "orderType": "DISBURSE",<br>      "orderStatus": "APPROVED",<br>      "userComment": null,<br>      "adminComment": null,<br>      "createdAt": null,<br>      "updatedAt": "2017-04-07T22:23:43.000Z",<br>      "userName": "Jay Wang Authentic",<br>      "displayName": "Jay Wang Authentic",<br>      "userEmail": "zhe.wang48@duke.edu",<br>      "itemName": "Coffee",<br>      "backfillStatus": "APPROVED", // PENDING, APPROVED, DENIED.<br>      // will be present iff this order has associated pdf<br>      "proofs": [ // will be present iff this order has associated proof files<br>        {<br>          "id": 29,<br>          "fileHandle": "sdfdasds",<br>          "fileName": "gg.pdf"<br>        },<br>        {<br>          "id": 31,<br>          "fileHandle": "sdfdasds",<br>          "fileName": "gg.pdf"<br>        }<br>      ],<br>      "instances": [ // will be present iff this order involves an asset.<br>        {<br>          "id": 23,<br>          "itemId": 10309,<br>          "assetTag": 1491696033187,<br>          "createdAt": "2017-04-09T00:00:33.000Z",<br>          "updatedAt": "2017-04-09T00:00:33.000Z",<br>          "instanceStatus": "AVAILABLE"<br>        },<br>        {<br>          "id": 24,<br>          "itemId": 10309,<br>          "assetTag": 1491696033347,<br>          "createdAt": "2017-04-09T00:00:33.000Z",<br>          "updatedAt": "2017-04-09T00:00:33.000Z",<br>          "instanceStatus": "AVAILABLE"<br>        }<br>      ]<br>    },<br>    ...<br>  }<br>}</pre>
+
+<br/>
+
+<code><b>PUT /api/ordersv2/:bundleId</b></code><br/>
+
+Approve or deny a bundle with the type (loan/disburse) indicated.The <code>{orderType}</code> and <code>{orderStatus}</code> of each order belonging to this bundle will be updated to be the same as the  <code>{bundleType}</code> and <code>{bundleStatus}</code>.  <br/>
+
+<br/>
+
+<pre id='afUACAy67cr'>//body<br>{<br>    "adminComment": ""<br>    "bundleStatus": "" // APPROVED/DENIED if status was PENDING<br>    "type": "" // LOAN or DISBURSE indicating the type of the approval<br>    // Will be ignored for other statuses.<br>    "instanceMap": "" // an object that holds the orderId -&gt; instanceIds pairs<br>    // Key(OrderId) is the per-item-based orderId<br>    // Value(Array&lt;Number&gt;) is the instanceIds you want to associate with this order.<br>    /* example: <br>       {<br>         orderId1: [instanceId1, instanceId2, ...],<br>         201: [8, 10, 11],<br>         204: [14],<br>       }<br>    */<br>}</pre>
+
+<pre id='afUACADrl3U'>//response<br>{<br>  "status": "success",<br>  "data": {<br>    "id": 97,<br>    "userId": 36,<br>    "bundleType": "DISBURSE",<br>    "bundleStatus": "APPROVED",<br>    "userComment": "aaa",<br>    "adminComment": "apppprove",<br>    "createdAt": "2017-03-19T22:17:51.000Z",<br>    "updatedAt": "2017-03-19T22:27:33.000Z"<br>  }<br>}</pre>
+
+<code><b>PUT /api/ordersv2/:id/:type</b></code><br/>
+
+<code><b>:type</b></code> must be either <code>ORDER</code> or <code>BUNDLE</code>.<br/>
+
+1) Convert a LOAN order or bundle with <code><b>:id</b></code> (orderId or bundleId) to DISBURSE. If it's a conversion of a bundle, all the LOAN orders belonging to that bundle will be converted to DISBURSE, and those orders of other types will be ignored. If any order involves an asset, instanceStatus of those instances associated will be automatically changed to 'DISBURSE'.<br/>
+
+2) RETURN a LOAN order or bundle with560 <code><b>:id</b></code> (orderId or bundleId). The bundleStatus or orderStatus must be APPROVED or DISPATCHED. If it's a RETURN of a bundle, all the LOAN orders belonging to that bundle will be marked as returned and corresponding quantity will be added back to the items.  If any order involves an asset, instanceStatus of those instances associated will be automatically changed to 'AVAILABLE'.<br/>
+
+<pre id='afUACANq40H'>// body<br>{<br>    "isConvert": "true",// to convert a LOAN order/bundle to DISBURSE.<br>    "isReturn": "true",// to RETURN a LOAN order/bundle. If present, will ignore isConvert field.<br>}</pre>
+
+<pre id='afUACAEckNB'>// return individual loan order<br>// response of /api/ordersv2/402/ORDER<br>{<br>  "status": "success",<br>  "data": {// updated order instance<br>    "id": 402,<br>    "userId": 36,<br>    "itemId": 10035,<br>    "bundleId": 98,<br>    "quantity": 10,<br>    "orderType": "LOAN",<br>    "orderStatus": "RETURNED",<br>    "userComment": null,<br>    "adminComment": null,<br>    "createdAt": "2017-03-20T18:54:56.000Z",<br>    "updatedAt": "2017-03-20T20:13:17.000Z"<br>  }<br>}</pre>
+
+<br/>
+
+<code><b>DELETE /api/ordersv2/:id/:type/</b></code><br/>
+
+delete an order or a bundle with <code><b>:id</b></code> (orderId or bundleId). <code><b>:type</b></code> must be either <code>ORDER</code> or <code>BUNDLE</code>.<br/>
+
+Only CARTED/PENDING order and PENDING bundle can be deleted.<br/>
+
+<hr/><h2 id='afUACA9gdH8'>Loans</h2>
+
+<code><b>GET /api/loans/?itemIds=&amp;userIds=&amp;orderStatuses=&amp;rowPerPage=&amp;pageNumber=&amp;</b></code><br/>
+
+Get all the loans with filter. itemIds,  userIds and orderStatuses, as implied by their plural form, can be used to pass in an array of ids, e.g. <b><code>/?itemIds=1&amp;itemIds=2&amp;itemIds=3</code> </b>represents <code><b>itemIds = [1, 2, 3]</b></code><br/>
+
+<pre id='afUACAbXw7M'>//response<br>{<br>  "status": "success",<br>  "data": [<br>    {<br>      "id": 400,<br>      "userId": 36,<br>      "itemId": 10035,<br>      "bundleId": 98,<br>      "quantity": 10,<br>      "orderType": "LOAN",<br>      "orderStatus": "RETURNED",<br>      "userComment": null,<br>      "adminComment": null,<br>      "createdAt": "2017-03-19T22:23:50.000Z",<br>      "updatedAt": "2017-03-20T19:51:54.000Z",<br>      "userName": "Jay Wang",<br>      "displayName": "Jay Wang",<br>      "itemName": "1K resistance"<br>    },<br>    ...<br>  ]<br>}</pre>
+
+<br/>
+
+<hr/><h2 id='afUACATMPPU'>Backfills</h2>
+
+<b><code>POST /api/backfills/</code></b><br/>
+
+Provide backfill proof (in form of a Filestack Handle) for a single or multiple orders.<br/>
+
+Three situations of orderIds provided:<br/>
+
+1) An order does not have an existing backfill (most common case) or the existing backfills all have PENDING backfillStatus: new row will be created with backfillStatus PENDING. If this order does not have LOAN orderType or APPROVED orderStatus, whole operation fails.<br/>
+
+2) An order is already approved for backfill: newly created row will just be additional proofs, and will be created with backfillStatus APPROVED.<br/>
+
+3) An order is already denied for backfill: If this order does not have LOAN orderType or APPROVED orderStatus, whole operation fails. But if it is still an APPROVED LOAN, all the existing backfills as well as the newly created proof will be changed to PENDING. (It essentially triggers the backfill request again).<br/>
+
+<pre id='afUACAtplM5'>//body<br>{<br>    "fileHandle": "",<br>    "orderIds": [id1, id2, ...] //an array of orderIds<br>    // that this fileHandle should be attached to.<br>    // If multiple orderIds are provided, multiple rows in proofs table will be<br>    // created with different proofId, <br>    // meaning they can be acted on(e.g. deleted) separetely.<br>}</pre>
+
+<b><code>DELETE /api/backfills/:proofId</code></b><br/>
+
+Delete a proof with <code>:proofId</code>. It will be removed from the corresponding order.<br/>
+
+<br/>
+
+<b><code>PUT /api/backfills/:orderId</code></b><br/>
+
+Approve or deny an order's backfill.<br/>
+
+<pre id='afUACAiOLDB'>//body<br>{<br>    "backfillStatus":"", //APPROVED, DENIED<br>}</pre>
+
+<hr/><h2 id='afUACAkBQFE'>Emails</h2>
+
+<b><code>GET /api/emails/subscribe</code></b><br/>
+
+Return true if the requesting user is a manager/admin and is subscribed to the system notification<br/>
+
+<pre id='afUACAmfxZ0'>//response<br>{<br>  "status": "success",<br>  "data": true<br>}</pre>
+
+<br/>
+
+<b><code>PUT /api/emails/subscribe</code></b><br/>
+
+Subscribe to the system notification. No op if the requesting user is already subscribed.<br/>
+
+<pre id='afUACAjZKno'>//response<br>{<br>  "status": "success",<br>  "data": "You are now subscribed to system notifications."<br>}</pre>
+
+<br/>
+
+<b><code>DELETE /api/emails/subscribe</code></b><br/>
+
+Unsubscribe from the system notification. No op if the requesting user is already unsubscribed.<br/>
+
+<pre id='afUACAm2r8K'>//response<br>{<br>  "status": "success",<br>  "data": "Successfully unsubscribed"<br>}</pre>
+
+<br/>
+
+<b><code>GET /api/emails/template/:templateName</code></b><br/>
+
+Retrieve the preamble for the email template<br/>
+
+<pre id='afUACA6nrxU'>//response<br>{<br>  "status": "success",<br>  "data": "Some preample defined by last write"<br>}</pre>
+
+<br/>
+
+<b><code>POST /api/emails/template<b><code>/:templateName</code></b></code></b><br/>
+
+Update the preamble for the email template<br/>
+
+<pre id='afUACA1ynth'>//response<br>{<br>  "status": "success",<br>  "data": {<br>    "id": 1,<br>    "createdAt": "2017-03-22T15:53:26.000Z",<br>    "updatedAt": "2017-03-22T15:56:26.000Z",<br>    "preamble": "some prefix",<br>    "templateName": "loanReminder"<br>  }<br>}</pre>
+
+<br/>
+
+<br/>
+
+<b><code>GET /api/emails/reminderDate</code></b><br/>
+
+Get all dates to send out reminders on all outstanding loans.<br/>
+
+<pre id='afUACAimaW8'>//response<br>{<br>  "status": "success",<br>  "data":<br>  [<br>      {<br>        "date": "cron date string" <br>      },<br>      {<br>        "date": "cron date string 2 " <br>      },<br>      ...<br>  ]<br>}</pre>
+
+<br/>
+
+<br/>
+
+<b><code>POST /api/emails/reminderDate</code></b><br/>
+
+Set a date to send out reminders on all outstanding loans. No op if date already exists<br/>
+
+<pre id='afUACAep570'>// request body<br>{<br>  "date": "cron date string" <br>}</pre>
+
+<pre id='afUACAUskou'>//response<br>{<br>  "status": "success",<br>}</pre>
+
+<br/>
+
+<b><code>DELETE /api/emails/reminderDate</code></b><br/>
+
+Remove a date to send out reminders on all outstanding loans. No op if date does not exists.<br/>
+
+<pre id='afUACAZJ1ru'>// request body<br>{<br>  "date": "cron date string" <br>}</pre>
+
+<pre id='afUACAwU42l'>//response<br>{<br>  "status": "success",<br>}</pre>
+
+<br/>
+
+<br/>
+
+</body></html>

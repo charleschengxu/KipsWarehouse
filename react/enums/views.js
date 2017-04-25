@@ -1,0 +1,23 @@
+const Views = {
+  ITEMS: 0,
+  REQUESTS: 1,
+  ITEMDETAIL: 2,
+  USERS: 3,
+  NEWITEM: 4,
+  NEWUSER: 5,
+  ORDERS: 6,
+  ORDERDETAIL: 7,
+  CART: 8,
+  FIELDS: 9,
+  TAGS: 10,
+  LOGS: 11,
+  ACCOUNTINFO: 12,
+  NEWFIELD: 13,
+  BULKIMPORT: 14,
+  LOANS: 15,
+  CONFIGEMAIL: 16,
+  INSTANCES: 17,
+  MINIMUMSTOCK: 18,
+};
+
+module.exports = Views;

@@ -1,0 +1,16 @@
+
+module.exports = {
+  // type
+  LOAN: 'LOAN',
+  DISBURSE: 'DISBURSE',
+  MIX: 'MIX',
+
+  // status
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  DENIED: 'DENIED',
+  CARTED: 'CARTED',
+  DISPATCHED: 'DISPATCHED',
+  RETURNED: 'RETURNED', // used by LOAN type exclusively.
+  PARTIALLY_APPROVED: 'PARTIALLY APPROVED',
+}

@@ -1,0 +1,21 @@
+{
+  "local": {
+    "url": "http://localhost:3000/",
+    "api_url": "http://localhost:3000/api/"
+  },
+  "development": {
+    "url": "https://dev.kipswarehouse.com/",
+    "api_url": "https://dev.kipswarehouse.com/api/"
+  },
+  "staging": {
+    "url": "https://staging.kipswarehouse.com/",
+    "api_url": "https://staging.kipswarehouse.com/api/"
+  },
+  "production": {
+    "url": "https://kipswarehouse.com/",
+    "api_url": "https://kipswarehouse.com/api/"
+  },
+  "filepicker": {
+    "api_key": "A2DDKbDsDQViieZ2oUe9xz"
+  }
+}

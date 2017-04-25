@@ -1,0 +1,16 @@
+[
+  {
+    "name": "Keyboard Assets M7",
+    "quantity": 1,
+    "location": "Hudson",
+    "restock_info": "Store in ECE110 lab",
+    "isAsset": 1,
+    "instances": 
+    [
+    	{
+    		"assetTag": 12345679,
+    		"serial_number": 666
+    	}
+    ]
+  }
+]

@@ -1,0 +1,403 @@
+/* MIN APP WIDTH */
+body{
+  min-width: 1000px;
+}
+
+.pt-navbar{
+  min-width: 1000px;
+}
+
+.reactRoot {
+   width: auto !important;
+   min-width: 1000px;
+}
+
+/* NAVBAR */
+.addToCart {
+  float: right;
+}
+
+.userPermissionSelect {
+  float: right;
+}
+
+.addToCartButton {
+  float: right;
+}
+
+.goToButton {
+  float: right;
+  margin-left: 10px;
+}
+
+.loanTag {
+  margin-left: 10px;
+}
+
+.logButton {
+  float: right;
+}
+
+.logButtonContainer {
+  padding-bottom: 16px;
+}
+
+.navBarInner {
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.navBar {
+  padding-bottom: 20px;
+}
+
+.menuTabs {
+  padding-top: 20px;
+}
+
+.adminNavBarLabel {
+  color: #A7B6C2;
+}
+/* LOGIN PAGE */
+.loginBox,
+.nonIdealState,
+.spinnerContainer {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  min-width: 275px;
+}
+
+.oathLogin {
+  float: right;
+  color: #8A9BA8;
+}
+
+.signInButton {
+  min-width: 275px;
+}
+
+.signInWithNetIdTransitionTest {
+  min-width: 275px;
+  text-align: center;
+}
+
+.navBarPadding {
+  padding-top: 32px;
+}
+
+.itemList{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.itemWrapper,
+.requestWrapper {
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+.requestButton,
+.processRequestButton {
+  float: right;
+}
+
+.itemDetail {
+  margin-top: 60px;
+  margin-left: 70px;
+  margin-right: 70px;
+}
+
+.itemDetailViewHeader {
+  padding-bottom: 12px;
+}
+
+.itemParameters {
+  padding-top: 6px;
+  border-left: 40px;
+}
+
+.itemParametersDetail {
+  margin-top: 30px;
+  margin-bottom: 12px;
+  padding-top: 12px;
+  padding-left: 20px;
+  padding-right: 20px;
+  border-style: solid;
+  border-top-color: #A7B6C2;
+  border-bottom-color: #A7B6C2;
+  border-bottom-width: thin;
+  border-top-width: thin;
+  border-left-width: 0px;
+  border-right-width: 0px;
+}
+
+.itemTags {
+  padding-top: 6px;
+}
+
+.itemTagContainer {
+  padding-right: 4px;
+}
+
+.description,
+.locationAndModelLabel,
+.numberRemainingLabel,
+.numberRemainingLabelDetail {
+  color: #8A9BA8;
+}
+
+.locationAndModelLabelDetail{
+  padding-bottom: 6px;
+  display: block;
+}
+
+.modelLabelDetail,
+.descriptionLabelDetail,
+.tagsLabelDetail {
+  min-width: 200px;
+  float: left;
+}
+
+.requestLabel {
+  padding-right: 8px;
+}
+
+.numberRemainingLabel{
+  padding-left: 8px;
+}
+
+.orderNumberLabel,
+.userReasonLabel,
+.adminReasonLabel,
+.quantityLabel,
+.locationAndModelLabel {
+  color: #8A9BA8;
+  display: block;
+}
+
+/* TAG DROPDOWN MENU */
+/* TODO fix spacing issue in tag dropdown submenu */
+
+/* REQUESTS OVERLAY*/
+.requestsCard {
+  height: 100%;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-45%, -50%);
+  min-width: 275px;
+}
+
+/* Search Bar */
+.searchMenu {
+  min-width: 250px;
+  min-height: 20px;
+}
+
+/* Request Confirmation */
+.itemLabelConfirmation,
+.quantityLabelConfirmation {
+  padding-bottom: 16px;
+  display: block;
+}
+
+.itemLabelDetail{
+  float: left;
+  padding-top: 5px;
+  margin-bottom: 0px;
+}
+
+.logEntry{
+  max-width: 75%;
+}
+
+.backButton{
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 6px;
+    padding-bottom: 0px;
+
+}
+
+.paddingRightAndLeft{
+  padding-left: 50px;
+  padding-right: 50px;
+}
+
+.descriptionWrapper {
+  padding-bottom: 16px;
+  max-width: 250px;
+}
+
+.descriptionInput {
+  min-width: 250px;
+  min-height: 50px;
+  display: block;
+}
+
+.confirmRequestButton{
+  margin-right: 10px;
+  float: left;
+}
+
+.submitItemButton {
+  display: block;
+}
+
+.itemConfirmationInner {
+  padding-bottom: 24px;
+  max-height: 250px;
+}
+
+.submitRequestPopover,
+.pendingRequestPopover {
+  display: inline;
+}
+
+.pendingRequestPopover {
+  float: right;
+}
+
+/* NEW ITEM FORM */
+.formError {
+  color: #DB3737;
+  display: block;
+  padding-bottom: 6px;
+}
+
+.formLabel {
+  display: block;
+}
+
+.newItemForm {
+  margin: auto;
+  padding: 64px;
+  padding-left: 84px;
+  padding-right: 84px;
+}
+
+.modifyItemform {
+  padding-left: 24px;
+  padding-right: 24px;
+}
+
+.newItemTitleContainer,
+.newItemFormInner {
+  display: block;
+  padding-bottom: 16px;
+  border-style: solid;
+  border-bottom-color: #A7B6C2;
+  border-bottom-width: thin;
+  border-left-width: 0px;
+  border-right-width: 0px;
+  border-top-width: 0px;
+}
+
+.createItemContainer {
+  padding-top: 24px;
+}
+
+.newItemFormInner {
+  padding-top: 16px;
+}
+
+.newItemFormInner {
+  padding-bottom: 16px;
+}
+
+.fieldPrivacyLabel {
+  color: #8A9BA8;
+}
+
+.permissionDropdown {
+  max-width: 167px;
+}
+
+/* UPDATE TAGS */
+
+.tagsUpdate {
+  padding-top: 8px;
+}
+
+/* DELETE ITEM */
+.modifyTagsPopover,
+.deleteItemPopover {
+  float: right;
+  padding-left: 6px;
+  max-height: 100px;
+}
+
+/* TAGS DIALOG */
+.tagBox {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.filterMenu {
+  padding: 20px;
+}
+
+.logsFilterMenu {
+  min-width: 400px;
+}
+
+/* USER MENU */
+.menuUserLabel {
+  padding: 7px;
+  color: #8A9BA8;
+}
+
+.accountInfoElement{
+  padding-bottom: 15px;
+}
+
+.apiKey{
+  width: 450px;
+  height: 75px;
+}
+
+.uploadBackfillPDFButton{
+  margin-bottom: 10px;
+}
+
+.submitBackfillButton,
+.uploadBackfillPDFButton{
+  width: 40%;
+  margin-left: 30%;
+  margin-right: 30%;
+}
+
+.paddedBackfillForm{
+  padding: 10px;
+}
+
+.backfillButton{
+  margin: 10px;
+}
+
+.floatRight{
+  float: right;
+}
+
+.updateButton{
+  margin-right: 10px;
+}
+
+.selectButton{
+  margin-right: 10px;
+}
+
+.dialogFormElement {
+  padding-bottom: 16px;
+}
+
+.collapsible {
+  display: block;
+  padding-bottom: 6px;
+}
+
+.collapseLabel {
+  padding-left: 12px;
+}

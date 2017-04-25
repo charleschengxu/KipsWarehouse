@@ -1,0 +1,837 @@
+# this is an example of the Uber API
+# as a demonstration of an API spec in YAML
+swagger: '2.0'
+info:
+  title: KipsWarehouse API
+  description: Move your app forward with the KipsWarehouse API
+  version: "1.0.0"
+# the domain of the service
+host: kipswarehouse.com
+# array of all schemes that your API supports
+schemes:
+  - https
+
+securityDefinitions:
+  JWT:
+    type: apiKey
+    name: Authorization
+    in: header
+
+basePath: /
+produces:
+  - application/json
+paths:
+  /login/{username}/{password}:
+    post:
+      description: |
+        Login with {username} and {password}
+      parameters:
+        - name: username
+          in: path
+          description: username
+          required: true
+          type: string
+        - name: password
+          in: path
+          description: password
+          required: true
+          type: string
+      tags:
+        - Login
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /login:
+    post:
+      description: |
+        Login with {token}
+      parameters:
+        - name: token
+          in: query
+          description: netId_access_token retrieved using Colab API
+          required: true
+          type: string
+      tags:
+        - Login
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/users:
+    get:
+      security:
+        - JWT: []
+      description: |
+        Get users' information.
+      parameters:
+        - name: userId
+          in: query
+          description: Get the information of the user with {userId}
+          required: false
+          type: string
+      tags:
+        - User
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithArrayDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/users/apikey:
+    get:
+      security:
+        - JWT: []
+      description: |
+        Get the apikey
+      tags:
+        - User
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/users/{username}/{password}:
+    post:
+      security:
+        - JWT: []
+      description: |
+        Create a new user.
+      parameters:
+        - name: username
+          in: path
+          description: username
+          required: true
+          type: string
+        - name: password
+          in: path
+          description: password
+          required: true
+          type: string
+      tags:
+        - User
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /api/users/{userId}:
+    put:
+      security:
+        - JWT: []
+      description: |
+        Change an existing user's information
+      parameters:
+        - name: userId
+          in: path
+          description: id of the user to be changed.
+          required: true
+          type: string
+        - name: displayName
+          in: query
+          description: displayName
+          required: false
+          type: string
+        - name: email
+          in: query
+          description: email
+          required: false
+          type: string
+        - name: permission
+          in: query
+          description: permission
+          required: false
+          type: string
+      tags:
+        - User
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/ordersv2/{itemId}/{quantity}/{userId}:
+    post:
+      security:
+        - JWT: []
+      description: |
+        Create a new order instance. For users, it is essentially 'add to cart'. For admin and manager, it could be used as a direct disbursement.
+      parameters:
+        - name: itemId
+          in: path
+          description: id of the item.
+          required: true
+          type: integer
+        - name: quantity
+          in: path
+          description: quantity of the item.
+          required: true
+          type: integer
+        - name: userId
+          in: path
+          description: id of the user. For add-to-cart, this is the user themselves. For direct-disbursement, this is the target user id.
+          required: true
+          type: integer
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: ["orderStatus"]
+            properties:
+              orderStatus:
+                description: CARTED if add-to-cart, DISPATCHED if direct-disbursement.
+                type: string
+              adminComment:
+                description: optional comment when direct-disbursement.
+                type: string
+      tags:
+        - Request
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/ordersv2/{id}:
+    get:
+      security:
+        - JWT: []
+      description: |
+        When GET, it is used to get all the orders belonging to (bundle) {id}.
+      parameters:
+        - name: id
+          in: path
+          description: id of the bundle whose sub-orders are being retrieved
+          required: true
+          type: integer
+      tags:
+        - Request
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithArrayDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+    post:
+      security:
+        - JWT: []
+      description: |
+        When POST, it is used to submit (user) {id}'s cart. A new PENDING bundle will be created containing all of this user's carted orders.
+      parameters:
+        - name: id
+          in: path
+          description: id of the user whose cart is going to be submitted.
+          required: true
+          type: integer
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: ["userComment"]
+            properties:
+              userComment:
+                description: required user comment when submit cart.
+                type: string
+      tags:
+        - Request
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      security:
+        - JWT: []
+      description: |
+        When PUT, it is used to approve or deny a bundle {id}. If approval, all the orders belonging to this bundle will be modified accordingly and items quantity deducted.
+      parameters:
+        - name: id
+          in: path
+          description: id of the bundle to be approved/denied.
+          required: true
+          type: integer
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            required: ["bundleStatus"]
+            properties:
+              bundleStatus:
+                description: either APPROVED or DENIED
+                type: string
+              adminComment:
+                description: optional admin comment when approving/denying.
+                type: string
+      tags:
+        - Request
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/ordersv2:
+    get:
+      security:
+        - JWT: []
+      description: |
+        Get all the bundles with specified filters.
+      parameters:
+        - name: bundleIds
+          in: query
+          description: ids of the bundles as a filter.
+          required: false
+          type: array
+          items:
+            type: integer
+        - name: itemIds
+          in: query
+          description: ids of the items as a filter.
+          required: false
+          type: array
+          items:
+            type: integer
+        - name: userIds
+          in: query
+          description: ids of the users as a filter.
+          required: false
+          type: array
+          items:
+            type: integer
+        - name: orderStatuses
+          in: query
+          description: ids of the orderStatuses (PENDING, DENIED, APPROVED, DISPATCHED) as a filter.
+          required: false
+          type: array
+          items:
+            type: string
+        - name: rowPerPage
+          in: query
+          description: number of rows per page, aka query limit.
+          required: false
+          type: integer
+        - name: pageNumber
+          in: query
+          description: the number of the page being queried.
+          required: false
+          type: integer
+      tags:
+        - Request
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithArrayDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /api/ordersv2/cart/{userId}:
+    get:
+      security:
+        - JWT: []
+      description: |
+        Get all the carted orders in {userId}'s cart.
+      parameters:
+        - name: userId
+          in: path
+          description: id of the user whose cart is being retrieved
+          required: true
+          type: integer
+      tags:
+        - Request
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithArrayDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /api/ordersv2/{id}/{type}:
+    delete:
+      security:
+        - JWT: []
+      description: |
+        Delete an order or a bundle with {id}, with the {type} indicating whether it's a ORDER deletion or BUNDLE deletion. An ORDER deletion is essentially deleting a carted order from the cart. A BUNDLE deletion is essentially removing an outstanding request.
+      parameters:
+        - name: id
+          in: path
+          description: id of the an order or a bundle.
+          required: true
+          type: integer
+        - name: type
+          in: path
+          description: ORDER or BUNDLE indicating the deletion type
+          required: true
+          type: string
+      tags:
+        - Request
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  /api/logs :
+    get:
+      security:
+        - JWT: []
+      # summary: Product Types
+      description: |
+        Get logs on all operations done by users
+      tags:
+        - Logs
+      responses:
+        200:
+          description: Data
+          schema:
+            $ref: '#/definitions/Logs'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /api/items/:
+    get:
+      security:
+        - JWT: []
+      description: |
+        Get all the items with proper filtering
+      parameters:
+        - name: includeTags
+          in: query
+          description: json array of tags to be included in the search
+          required: false
+          type: string
+        - name: excludeTags
+          in: query
+          description: json array of tags to be excluded in the search
+          required: false
+          type: string
+        - name: id
+          in: query
+          description: identifies an item
+          required: false
+          type: number
+          format: integer
+        - name: rowPerPage
+          in: query
+          description: the number of rows in a page for pagination
+          required: false
+          type: number
+          format: integer
+        - name: pageNumber
+          in: query
+          description: starting counting at 1
+          required: false
+          type: number
+          format: integer
+        - name: name
+          in: query
+          description: the fizzy name of an item to be searched
+          required: false
+          type: string
+        - name: model
+          in: query
+          description: the fizzy model of an item to be searched
+          required: false
+          type: string
+      tags:
+        - Items
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /api/items/customFields:
+    get:
+      security:
+        - JWT: []
+      description: get all custom fields defined on items
+      tags:
+        - Custom Fields
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /api/items/customFields/{name}/{type}/{visibility} :
+    post:
+      security:
+        - JWT: []
+      description: Create this custom field. If field already exist, update it with the  :visibility given, but the :type of the field cannot be changed after field is created. Doing so to protect legacy data. If such need persists, one shall explicit delete the field, and then create it with a different type.
+      parameters:
+        - name: name
+          in: path
+          description: name of the custom field to be created or updated
+          required: true
+          type: string
+        - name: type
+          in: path
+          description: enum {'SHORT','LONG','INT','FLOAT'}
+          required: true
+          type: string
+        - name: visibility
+          in: path
+          description: enum {'PRIVATE','PUBLIC'}
+          required: true
+          type: string
+      tags:
+        - Custom Fields
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+  /api/items/customFields/{name}/:
+    delete:
+      security:
+        - JWT: []
+      description: Remove a custom field on items. All values associated with this field will also be deleted.
+      parameters:
+        - name: name
+          in: path
+          description: name of the custom field to be deleted
+          required: true
+          type: string
+      tags:
+        - Custom Fields
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /api/items/{itemName}/{quantity}:
+    post:
+      security:
+        - JWT: []
+      description: Create a new item with {itemName} and {quantity}
+      parameters:
+        - name: itemName
+          in: path
+          description: item name
+          required: true
+          type: string
+        - name: quantity
+          in: path
+          description: count of items
+          required: true
+          type: integer
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            # required: []
+            properties:
+              model:
+                description: item model
+                type: string
+              description:
+                description: describe the item in details
+                type: string
+              location:
+                description: the location of the item
+                type: string
+              tags:
+                description: an array of tags, each tag is a string
+                type: object
+              itemStatus:
+                description: enum {"ACTIVE", "INACTIVE"}
+                type: string
+      tags:
+        - Items
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /api/items/{itemId}:
+    put:
+      security:
+        - JWT: []
+      description: Update by overriding an existing item with {itemId}
+      parameters:
+        - name: itemId
+          in: path
+          description: count of items
+          required: true
+          type: integer
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            # required: []
+            properties:
+              name:
+                description: item name
+                type: string
+              quantity:
+                description: count of the item
+                type: integer
+              model:
+                description: item model
+                type: string
+              description:
+                description: describe the item in details
+                type: string
+              location:
+                description: the location of the item
+                type: string
+              tags:
+                description: an array of tags, each tag is a string
+                type: object
+              itemStatus:
+                description: enum {"ACTIVE", "INACTIVE"}
+                type: string
+      tags:
+        - Items
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /api/items/{itemId}/:
+    delete:
+      security:
+        - JWT: []
+      description: Remove an item
+      parameters:
+        - name: itemId
+          in: path
+          description: identifies an item
+          required: true
+          type: integer
+      tags:
+        - Items
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+  /api/tags/:
+    delete:
+      security:
+        - JWT: []
+      description: get all the tags
+      tags:
+        - Tags
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+  # /api/tags/:
+    post:
+      security:
+        - JWT: []
+      description: create new tags from the array provided (will ignore those already existing).
+      parameters:
+        - name: body
+          in: body
+          required: true
+          schema:
+            type: object
+            # required: []
+            properties:
+              tags:
+                description: array of tags, each as a string
+                type: string
+      tags:
+        - Tags
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+
+
+  /api/tags/{tagId}/:
+    delete:
+      security:
+        - JWT: []
+      description: delete an existing tag with :tagId. Also removes
+      parameters:
+        - name: tagId
+          in: path
+          description: identifies an item
+          required: true
+          type: integer
+      tags:
+        - Tags
+      responses:
+        200:
+          description: Response object
+          schema:
+            $ref: '#/definitions/ResponseWithObjectDataType'
+        default:
+          description: Error
+          schema:
+            $ref: '#/definitions/Error'
+
+definitions:
+  # ================= LOG ===================
+  Logs:
+    type: object
+    properties:
+      status:
+        type: string
+      data:
+        type: array
+        items:
+          $ref: '#/definitions/Log'
+  Log:
+    type: object
+    properties:
+      id:
+        type: string
+      content:
+        type: string
+      createdAt:
+        type: string
+      updatedAt:
+        type: string
+      isValid:
+        type: boolean
+      srcUser:
+        $ref: '#/definitions/LogField'
+      item:
+        $ref: '#/definitions/LogField'
+      bundle:
+        $ref: '#/definitions/LogField'
+  LogField:
+    type: object
+    properties:
+      id:
+        type: integer
+      name:
+        type: string
+  ResponseWithArrayDataType:
+    type: object
+    properties:
+      status:
+        description: "success"
+        type: string
+      data:
+        description: An array of objects
+        type: array
+        items:
+          type: object
+  ResponseWithObjectDataType:
+    type: object
+    properties:
+      status:
+        description: "success"
+        type: string
+      data:
+        description: An object
+        type: object
+  Error:
+    type: object
+    properties:
+      status:
+        description: "error"
+        type: string
+      error:
+        description: Error object
+        type: object
